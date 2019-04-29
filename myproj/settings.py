@@ -125,6 +125,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # 登录后重定向
-LOGIN_REDIRECT_URL = '/home'
+LOGIN_REDIRECT_URL = '/index'
 # 未登录时指向
 LOGIN_URL = '/login'
