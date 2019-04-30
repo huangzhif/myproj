@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
         'NAME': 'myproj',
-        'PASSWORD': 'Abc123!!',
+        'PASSWORD': '***',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -122,9 +122,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
 # 登录后重定向
 LOGIN_REDIRECT_URL = '/index'
 # 未登录时指向
 LOGIN_URL = '/login'
+# 指定静态文件路径
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)

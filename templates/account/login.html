@@ -3,13 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .background {
+            width: 600px;
+            height: 450px;
+            /*border: 1px solid;*/
+            margin-left: 32%;
+            margin-top: 11%;
+            background: #ffffff url('../static/Login-Form.png') center center no-repeat;
+        }
+
+        #id_username {
+            position: relative;
+            left: 214px;
+            top: 167px;
+            width: 198px;
+            height: 23px;
+            border-radius: 4px;
+        }
+
+        #id_password {
+            position: relative;
+            left: 7px;
+            top: 216px;
+            width: 198px;
+            height: 23px;
+            border-radius: 4px;
+        }
+
+        #submit {
+            position: relative;
+            left: -167px;
+            top: 275px;
+            width: 103px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: #6999fa;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
+<div class="background">
     <form class="form" method="post" action=".">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Submit
-    </button>
-</form>
+        {% csrf_token %}
+        {% for field in form %}
+        <!--<div class="fieldWrapper">-->
+        {{ field }}
+        <!--</div>-->
+        <!--{% endfor %}-->
+        <!--{% if form.errors %}-->
+        <!--{% for field in form %}-->
+        <!--{% for error in field.errors %}-->
+        <!--<div class="alert alert-danger">-->
+        <!--<strong>{{ error|escape }}</strong>-->
+        <!--</div>-->
+        <!--{% endfor %}-->
+        <!--{% endfor %}-->
+        <!--{% for error in form.non_field_errors %}-->
+        <!--<div class="alert alert-danger">-->
+        <!--<strong>{{ error|escape }}</strong>-->
+        <!--</div>-->
+        {% endfor %}
+        <!--{% endif %}-->
+        <button type="submit" id="submit">Sing In
+        </button>
+    </form>
+</div>
+
 </body>
 </html>
