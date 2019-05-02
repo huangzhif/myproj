@@ -59,8 +59,7 @@
                             </span>
                         </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs profile-dropdown">
-                            <li><a href="#"><i class="fa fa-book"> </i><span> 个人信息</span></a></li>
-                            <li><a href="#"><i class="fa fa-cogs"> </i><span> 修改密码</span></a></li>
+                            <li><a href="{% url 'account:password_change' %}"><i class="fa fa-cogs"> </i><span> 修改密码</span></a></li>
                             <!--<li><a id="switch_user"><i class="fa fa-exchange"></i><span> 用户页面</span></a></li>-->
                             <li><a href="{% url 'account:logout' %}"><i class="fa fa-sign-out"></i> 注销登录</a></li>
                         </ul>
