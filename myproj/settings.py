@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import configparser
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# 读取配置文件信息
+conf = configparser.ConfigParser()
+conf.read(os.path.join(BASE_DIR, 'config.conf'))
 
 # Application definition
 
@@ -77,11 +80,11 @@ WSGI_APPLICATION = 'myproj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'USER': 'root',
-        'NAME': 'myproj',
-        'PASSWORD': '***',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'USER': conf.get('database','USER'),
+        'NAME': conf.get('database','NAME'),
+        'PASSWORD': conf.get('database','PASSWORD'),
+        'HOST': conf.get('database','HOST'),
+        'PORT': conf.get('database','PORT'),
     }
 }
 
@@ -131,3 +134,17 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_USE_TLS = False
+EMAIL_HOST = conf.get('email','EMAIL_HOST')
+EMAIL_PORT = conf.get('email','EMAIL_PORT')
+EMAIL_HOST_USER = conf.get('email','EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = conf.get('email','EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# session 配置
+SESSION_COOKIE_AGE = 604800  # Session的Cookie的有效时长（秒）（默认1209600）
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 是否关闭浏览器使得Session过期（默认）
