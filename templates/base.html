@@ -34,6 +34,20 @@
                     <a href="{% url 'account:index' %}"><i class="fa fa-dashboard" style="width: 20px"></i> <span
                             class="nav-label">首页</span></a>
                 </li>
+                <li>
+                    <a href="#"><i class="fa fa-group" style="width: 20px"></i>
+                        <span class="nav-label">用户管理</span>
+                        <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="{% url 'account:user_list' %}">用户列表</a>
+                        </li>
+                        <li>
+                            <a href="#">用户组</a>
+                        </li>
+                    </ul>
+
+                </li>
             </ul>
         </div>
     </nav>

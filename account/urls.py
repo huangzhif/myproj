@@ -38,4 +38,7 @@ urlpatterns = [
 
     # 修改密码
     path('password_change/',views.password_change,name="password_change"),
+
+    # 用户详情
+    path('user_list/',views.user_list,name="user_list"),
 ]
