@@ -1,12 +1,17 @@
 import json
 
+from apis.page_api import pages
+from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.contrib.auth.models import Group, User
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from apis.page_api import pages
+from apis.dbop import DataOperate
+
 
 # Create your views here.
 # @login_required(login_url='/login/')
@@ -53,6 +58,79 @@ def user_list(request):
     if pra_keyword:
         user_objs = user_objs.filter(username__contains=pra_keyword)
 
-    assets_list, p, assets, page_range, current_page, show_first, show_end = pages(
+    _, p, objs, page_range, current_page, show_first, show_end = pages(
         user_objs, request)
     return render(request, "account/user_list.html",locals())
+
+
+@login_required
+def group_list(request):
+    """
+    组列表
+    :param request:
+    :return:
+    """
+    pra_keyword = request.GET.get('keyword','')
+
+    group_objs = Group.objects.order_by("name")
+
+    if pra_keyword:
+        group_objs = group_objs.filter(name__contains=pra_keyword)
+
+    _, p, objs, page_range, current_page, show_first, show_end = pages(
+        group_objs, request)
+    return render(request, "account/group_list.html", locals())
+
+
+class UserGroupRelaForm(forms.ModelForm):
+    users = forms.ModelMultipleChoiceField(queryset= User.objects.all(),
+                                           required=True,
+                                           widget=FilteredSelectMultiple(
+                                               "用户:",is_stacked=False
+                                           ))
+
+    class Media:
+        js = ('admin/js/vendor/jquery/jquery.js', 'admin/js/jquery.init.js')
+
+    class Meta:
+        model = User
+        fields = ("username",)
+
+
+@login_required
+def create_group(request):
+    """
+    创建用户组
+    :param request:
+    :return:
+    """
+    user_form = UserGroupRelaForm()
+    if request.method == "POST":
+        user_form = UserGroupRelaForm(request.POST)
+        try:
+            usergroup = Group.objects.create(name=request.POST['usergroup'])
+
+            user_objs = [User.objects.get(id=user_id) for user_id in request.POST.getlist('users','')]
+            for i in user_objs:
+                i.groups.add(usergroup)
+            return HttpResponseRedirect(reverse('account:group_list'))
+        except Exception as e:
+            errors = str(e)
+            return render(request, "account/create_group.html",locals())
+    else:
+        return render(request,"account/create_group.html",locals())
+
+
+@login_required
+@csrf_exempt
+def del_group(request):
+    """
+    删除用户组
+    :param request:
+    :return:
+    """
+    group_id = request.POST['gid']
+    status, msg = DataOperate.delete(Group, id=group_id)
+    return HttpResponse(
+        json.dumps({"e": status, "msg": msg}, ensure_ascii=False),
+        content_type="application/json")

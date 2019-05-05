@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ user_form.media }}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <button class="layui-btn layui-btn-sm" onclick="window.history.back()">返回</button>
+                    <div class="ibox-tools" >
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown"
+                           href="table_data_tables.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form action="{% url 'account:create_group' %}" method="POST" lay-filter="example">{% csrf_token %}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户组:</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="usergroup" lay-verify="title" autocomplete="off"
+                                       placeholder="请输用户组名称"
+                                       required="required"
+                                       class="layui-input" maxlength="70" id="id_groupname">
+                            </div>
+                            {% if errors %}
+                            <p style="color: red;">
+                                {{ errors }}
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户:</label>
+                            <div class="layui-input-block">
+                                {{ user_form.users }}
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <input type="submit" class="btn btn-primary btn-lg" value="提交"
+                                       style="font-size: 12px;line-height: 1">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_foot_js %}
+<script>
+    $(document).ready(function () {
+        $('#side-menu li a').each(function () {
+            if($($(this))[0].href == document.referrer){
+                $(this).addClass("active").parentsUntil($("#side-menu"), "li").addClass('active').parentsUntil($("#side-menu"), "ul").addClass("collapse in");
+            }
+        });
+    })
+</script>
+<!--<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>-->
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<!--<script type="text/javascript" src="js/getElementsBySelector.js"></script>-->
+<script type="text/javascript" src="/static/admin/js/actions.js"></script>
+<script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
+<script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
+<!--<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>-->
+
+<script type="text/javascript" src="/static/admin/jsi18n.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css">
+<style>
+    .selector {
+        width: 100%;
+    }
+    .selector-available, .selector-chosen {
+        width: 700px;
+    }
+    .selector select {
+        width: 700px;
+    }
+    input[type=text] {
+        border:1px solid #ccc;
+        border-radius: 4px;
+        padding:5px 6px;
+        margin-top: 0;
+    }
+    h2 {
+        padding: 8px;
+        font-size: 13px;
+        text-align: left;
+    }
+
+    </style>
+{% endblock %}

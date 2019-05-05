@@ -6,7 +6,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>用户列表</h5>
+                    <h5>用户组列表</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -20,7 +20,7 @@
                 <div class="ibox-content">
                     <form id="user_form">
                         <div class="col-sm-1" style="padding-left: 0">
-                            <a href="#" class="btn btn-primary">创建用户</a>
+                            <a href="{% url 'account:create_group' %}" class="btn btn-primary">创建用户组</a>
                         </div>
                         <div class="col-sm-7" style="padding-left: 0px"></div>
                         <div class="col-sm-4" style="padding-right: 0">
@@ -46,10 +46,8 @@
                             <thead>
                             <tr class="text-center">
                                 <th class="text-center">序号</th>
-                                <th class="text-center">用户名</th>
-                                <th class="text-center">角色</th>
                                 <th class="text-center">用户组</th>
-                                <th class="text-center">秘钥</th>
+                                <th class="text-center">用户数</th>
                                 <th class="text-center">操作</th>
                             </tr>
                             </thead>
@@ -58,20 +56,15 @@
                             <tr class="gradeX">
                                 <td class="text-center"> {{ forloop.counter }}
                                 </td>
-                                <td class="text-center"> {{ obj.username }}
+                                <td class="text-center"> {{ obj.name }}
                                 </td>
-                                <td class="text-center"> {{ obj.is_superuser }}
-                                </td>
-                                <td class="text-center"> {{ obj.groups.count }}
-                                </td>
-                                <td class="text-center">
-                                    -
+                                <td class="text-center"> {{ obj.user_set.count }}
                                 </td>
                                 <td class="text-center">
                                     <a href="#"
                                        class="btn btn-xs btn-info">更新</a>
                                     <a class="btn btn-xs btn-danger del"
-                                       onclick="del_user('{{ obj.id }}','{{ obj.username }}')">删除</a>
+                                       onclick="del_group('{{ obj.id }}','{{ obj.name }}')">删除</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -96,4 +89,37 @@
 {% endblock %}
 
 {% block custom_foot_js %}
+<script type="text/javascript">
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        })
+
+        function del_group(gid, gname) {
+            layer.open({
+                type: 1,
+                skin: "layui-layer-rim",
+                area: ["400px", "200px"],
+                title: "删除用户组",
+                content: '<div class="text-center" style="margin-top:20px"><p>是否确定删除用户组 ' + gname + ' </p></div>',
+                btn: ['确定', '取消'],
+                yes: function () {
+                    $.ajax({
+                        url: "{% url 'account:del_group' %}",
+                        type: "POST",
+                        data: {"gid": gid},
+                        success: function (e) {
+                            if (e['e']) {
+                                parent.location.reload();
+                                layer.msg("删除成功");
+                            } else {
+                                layer.msg("删除失败: " + e['msg']);
+                            }
+                        },
+
+                    })
+                },
+            });
+        }
+
+</script>
 {% endblock %}
