@@ -61,7 +61,7 @@
                                 <td class="text-center"> {{ obj.user_set.count }}
                                 </td>
                                 <td class="text-center">
-                                    <a href="#"
+                                    <a href="{% url 'account:update_group' %}?gid={{ obj.id }}"
                                        class="btn btn-xs btn-info">更新</a>
                                     <a class="btn btn-xs btn-danger del"
                                        onclick="del_group('{{ obj.id }}','{{ obj.name }}')">删除</a>
