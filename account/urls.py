@@ -41,6 +41,8 @@ urlpatterns = [
 
     # 用户详情
     path('user_list/',views.user_list,name="user_list"),
+    path('user_list/create_user',views.create_user,name='create_user'),
+    path('user_list/del_user',views.del_user,name="del_user"),
 
     # 用户组
     path('group_list/', views.group_list, name="group_list"),

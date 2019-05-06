@@ -1,16 +1,18 @@
 import json
 
+from apis.api import PyCrypt
+from apis.dbop import DataOperate
 from apis.page_api import pages
+from common.const import menujson
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from apis.dbop import DataOperate
 
 
 # Create your views here.
@@ -64,6 +66,54 @@ def user_list(request):
 
 
 @login_required
+@csrf_exempt
+def create_user(request):
+    if request.method == "GET":
+        groups = Group.objects.all()
+        menulist = menujson
+        return render(request, "account/create_user.html", locals())
+    else:
+        # print(request.POST)
+        try:
+            isuser = User.objects.filter(username=request.POST['username'])
+            if isuser:
+                raise Exception("用户 {username} 已存在，请重新输入".format(username=request.POST['username']))
+
+            password = PyCrypt.gen_rand_pass(16)
+            userobj = User.objects.create(username=request.POST['username'],
+                                          password = password,
+                                          is_superuser=request.POST['is_superuser'],
+                                          email=request.POST['email'],
+                                          is_active=request.POST['is_active'])
+
+            userobj.set_password(password)
+            userobj.profile.menu = ','.join(request.POST.getlist('cdchecked'))
+
+            userobj.save()
+
+            userobj.groups.set(request.POST.getlist('usergroups'))
+
+            status = True
+            msg = ""
+        except Exception as e:
+            status = False
+            msg = str(e)
+        finally:
+            return HttpResponse(json.dumps({"status": status,"msg":msg}, ensure_ascii=False),
+                                content_type="application/json")
+
+
+@login_required(login_url='/login')
+@csrf_exempt
+def del_user(request):
+    user = get_object_or_404(User, pk=request.POST['user_id'])
+    # 删除系统用户
+    # server_del_user(user.username.split('@')[0])
+    user.delete()
+    return HttpResponse(json.dumps({"status": True, "msg": ""}, ensure_ascii=False),content_type="application/json")
+
+
+@login_required
 def group_list(request):
     """
     组列表
@@ -83,7 +133,7 @@ def group_list(request):
 
 
 class UserGroupRelaForm(forms.ModelForm):
-    users = forms.ModelMultipleChoiceField(queryset= User.objects.all(),
+    users = forms.ModelMultipleChoiceField(queryset= User.objects.filter(is_active=1),
                                            required=True,
                                            widget=FilteredSelectMultiple(
                                                "用户:",is_stacked=False

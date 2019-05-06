@@ -20,7 +20,7 @@
                 <div class="ibox-content">
                     <form id="user_form">
                         <div class="col-sm-1" style="padding-left: 0">
-                            <a href="#" class="btn btn-primary">创建用户</a>
+                            <a href="{% url 'account:create_user' %}" class="btn btn-primary">创建用户</a>
                         </div>
                         <div class="col-sm-7" style="padding-left: 0px"></div>
                         <div class="col-sm-4" style="padding-right: 0">
@@ -96,4 +96,47 @@
 {% endblock %}
 
 {% block custom_foot_js %}
+<script type="text/javascript">
+    layui.use('layer', function () {
+        layer = layui.layer;
+    })
+
+    function change_info() {
+        var args = $("#user_form").serialize();
+        window.location = "{% url 'account:user_list' %}?" + args;
+    }
+
+    $("#search_input").keydown(function (e) {
+        if(e.keyCode==13){
+            change_info()
+        }
+    });
+
+    function del_user(uid,name) {
+        layer.open({
+            type: 1,
+            skin: "layui-layer-rim",
+            area: ["400px", "200px"],
+            title: "删除用户",
+            content: '<div class="text-center" style="margin-top:20px"><p>是否确定删除用户 ' + name + ' </p></div>',
+            btn: ['确定', '取消'],
+            yes: function () {
+                $.ajax({
+                    url: "{% url 'account:del_user' %}",
+                    type: "POST",
+                    data: {"user_id": uid},
+                    success: function (e) {
+                        if (e['status']) {
+                            parent.location.reload();
+                            layer.msg("删除成功");
+                        } else {
+                            layer.msg("删除失败: " + e['msg']);
+                        }
+                    },
+
+                })
+            },
+        });
+    }
+</script>
 {% endblock %}
