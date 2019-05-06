@@ -103,7 +103,7 @@ def create_user(request):
                                 content_type="application/json")
 
 
-@login_required(login_url='/login')
+@login_required
 @csrf_exempt
 def del_user(request):
     user = get_object_or_404(User, pk=request.POST['user_id'])
@@ -111,6 +111,22 @@ def del_user(request):
     # server_del_user(user.username.split('@')[0])
     user.delete()
     return HttpResponse(json.dumps({"status": True, "msg": ""}, ensure_ascii=False),content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def update_user(request):
+    if request.method == "GET":
+        groups = Group.objects.all()
+        menulist = menujson
+        userobj = User.objects.get(id=request.GET.get('uid'))
+
+        groups_list = list(userobj.groups.all().values_list('id', flat=True))
+        is_superuser = 1 if userobj.is_superuser else 0
+        if userobj.profile.menu:
+            for i in userobj.profile.menu.split(','):
+                menulist = menulist.replace(i,i+'","checked":"true')
+        return render(request, "account/update_user.html",locals())
 
 
 @login_required

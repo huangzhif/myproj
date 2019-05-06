@@ -68,7 +68,7 @@
                                     -
                                 </td>
                                 <td class="text-center">
-                                    <a href="#"
+                                    <a href="{% url 'account:update_user' %}?uid={{ obj.id }}"
                                        class="btn btn-xs btn-info">更新</a>
                                     <a class="btn btn-xs btn-danger del"
                                        onclick="del_user('{{ obj.id }}','{{ obj.username }}')">删除</a>

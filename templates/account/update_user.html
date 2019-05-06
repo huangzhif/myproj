@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <button class="layui-btn layui-btn-sm" onclick="window.history.back()">返回</button>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="table_data_tables.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="layui-form" action="." method="POST" lay-filter="example">{% csrf_token %}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名:</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="username"
+                                       autocomplete="off"
+                                       placeholder=""
+                                       lay-verify="username"
+                                       class="layui-input" maxlength="70"
+                                       required="required"
+                                       id="id_username" value={{ userobj.username }}>
+                                <input type="hidden" name="id_id" lay-verify="id" class="layui-input"
+                                       id="id_id" value={{ userobj.id }}>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">管理员:</label>
+                            <div class="layui-input-block">
+                                <select name="is_superuser" lay-filter="is_superuser" id="id_superuser">
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">邮箱:</label>
+                            <div class="layui-input-block">
+                                <input type="email" name="email"
+                                       lay-verify="email" autocomplete="off"
+                                       placeholder="请输入邮箱"
+                                       class="layui-input" maxlength="70"
+                                       required id="id_email" value={{ userobj.email }}>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户组:</label>
+                            <div class="layui-input-block">
+                                <select name="projgroup" xm-select="selectId1" lay-verify="required" xm-select-show-count="10" xm-select-search="" xm-select-search-type="dl" >
+                                    {% for group in groups %}
+                                        <option value={{ group.id }}>{{ group.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">权限:</label>
+                            <div class="layui-input-block">
+                                <div id="xtree1" style="width:400px;border: 1px solid #747474;padding: 10px 0 25px 5px;">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="demo1" style="font-size: 12px;line-height: 1">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block custom_foot_js %}
+<script type="text/javascript" src="/static/layui/formSelects-v4.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/layui/css/formSelects-v4.css">
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer;
+        var formSelects = layui.formSelects;
+        formSelects.value('selectId1', {{ groups_list }});
+
+        $("select[name=is_superuser]").val({{ is_superuser }});
+        layui.form.render();
+
+        var xtree1 = new layuiXtree({
+            elem: 'xtree1'                  //必填
+                , form: form                    //必填
+                , data: {{ menulist | safe }}      //必填
+                , isopen: false  //加载完毕后的展开状态，默认值：true
+                , ckall: true    //启用全选功能，默认值：false
+                , ckallback: function () { } //全选框状态改变后执行的回调函数
+                , icon: {        //三种图标样式，更改几个都可以，用的是layui的图标
+                    open: "&#xe625;"       //节点打开的图标
+                    , close: "&#xe623;"    //节点关闭的图标
+                    , end: "&#xe621;"      //末尾节点的图标
+                }
+                , color: {       //三种图标颜色，独立配色，更改几个都可以
+                    open: "#EE9A00"        //节点图标打开的颜色
+                    , close: "#EEC591"     //节点图标关闭的颜色
+                    , end: "#828282"       //末级节点图标的颜色
+                }
+                , click: function (data) {  //节点选中状态改变事件监听，全选框有自己的监听事件
+                    console.log(data);
+                    // console.log(data.elem); //得到checkbox原始DOM对象
+                    // console.log(data.elem.checked); //开关是否开启，true或者false
+                    // console.log(data.value); //开关value值，也可以通过data.elem.value得到
+                    // console.log(data.othis); //得到美化后的DOM对象
+                }
+
+        });
+
+        form.on('submit(demo1)',function(){
+            layer.alert("abc");
+            return false;
+        });
+    });1
+
+    $(document).ready(function () {
+        $('#side-menu li a').each(function () {
+            if ($($(this))[0].href == document.referrer) {
+                $(this).addClass("active").parentsUntil($("#side-menu"), "li").addClass('active').parentsUntil($("#side-menu"), "ul").addClass("collapse in");
+            }
+        });
+    })
+</script>
+
+{% endblock %}
